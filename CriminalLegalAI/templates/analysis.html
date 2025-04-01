@@ -1,0 +1,690 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Analysis Header -->
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold mb-3">
+            <i class="bi bi-file-earmark-text me-2"></i> Legal Analysis Results
+        </h1>
+        <p class="lead text-muted">
+            Based on the details provided for your {{ results.case_details.case_type }} case
+        </p>
+    </div>
+
+    <!-- Analysis Content -->
+    <div class="row g-4">
+        <!-- Case Summary Sidebar -->
+        <div class="col-lg-4">
+            <!-- Case Info Card -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-info-circle me-2"></i> Case Summary
+                    </h3>
+                    <span class="badge rounded-pill
+                           {% if results.case_details.case_type == 'Theft' %}badge-theft
+                           {% elif results.case_details.case_type == 'Assault' %}badge-assault
+                           {% elif results.case_details.case_type == 'Fraud' %}badge-fraud
+                           {% else %}badge-other{% endif %}">
+                        {{ results.case_details.case_type }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Date:</dt>
+                        <dd class="col-sm-8">{{ results.case_details.incident_date }}</dd>
+
+                        <dt class="col-sm-4">Location:</dt>
+                        <dd class="col-sm-8">{{ results.case_details.incident_location }}</dd>
+
+                        {% if results.case_details.victim_details %}
+                        <dt class="col-sm-4">Victim:</dt>
+                        <dd class="col-sm-8">{{ results.case_details.victim_details }}</dd>
+                        {% endif %}
+
+                        {% if results.case_details.accused_details %}
+                        <dt class="col-sm-4">Accused:</dt>
+                        <dd class="col-sm-8">{{ results.case_details.accused_details }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Offense Description Card -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-card-text me-2"></i> Offense Description
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ results.case_details.offense_description }}</p>
+                </div>
+            </div>
+
+            <!-- Your Query Card -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-question-circle me-2"></i> Your Query
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ results.case_details.query }}</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-arrow-right-circle me-2"></i> Next Steps
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-secondary" onclick="window.print()">
+                            <i class="bi bi-printer me-2"></i> Print Analysis
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-plus-circle me-2"></i> Submit New Case
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Analysis Content -->
+        <div class="col-lg-8">
+            <!-- Legal Analysis Card -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i> Comprehensive Legal Analysis
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="analysis-content">
+                        {{ results.analysis | safe }}
+
+                        <!-- Quick Navigation -->
+                        <div class="floating-action">
+                            <div class="btn-group-vertical">
+                                <button class="btn btn-secondary action-btn mb-2" onclick="scrollToSection('ipc-sections')" data-bs-toggle="tooltip" title="Jump to IPC Sections">
+                                    <i class="bi bi-journal-text"></i>
+                                </button>
+                                <button class="btn btn-secondary action-btn mb-2" onclick="scrollToSection('precedents')" data-bs-toggle="tooltip" title="Jump to Precedents">
+                                    <i class="bi bi-bank"></i>
+                                </button>
+                                <button class="btn btn-secondary action-btn" onclick="printAnalysis()" data-bs-toggle="tooltip" title="Print Analysis">
+                                    <i class="bi bi-printer"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Evidence Tags -->
+                        <div class="mt-4">
+                            <h4>Evidence Overview</h4>
+                            <div class="evidence-tags">
+                                {% if results.case_details.evidence_summary %}
+                                    {% set evidence_types = results.case_details.evidence_summary.split(',') %}
+                                    {% for evidence in evidence_types %}
+                                        <span class="evidence-tag" data-evidence="{{ evidence.strip() }}">
+                                            {{ evidence.strip() }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IPC Sections -->
+            <div class="card mb-4" id="ipc-sections" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-journal-text me-2"></i> Relevant IPC Sections
+                    </h3>
+                    <span class="badge bg-secondary rounded-pill">{{ results.ipc_sections|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if results.ipc_sections %}
+                        <div class="accordion" id="ipcAccordion">
+                            {% for section in results.ipc_sections %}
+                                <div class="accordion-item" style="background-color: #0a0a0a; border: 1px solid #333;">
+                                    <h2 class="accordion-header" id="heading{{ section.id }}">
+                                        <button class="accordion-button collapsed text-white" type="button" 
+                                                data-bs-toggle="collapse" data-bs-target="#collapse{{ section.id }}" 
+                                                aria-expanded="false" aria-controls="collapse{{ section.id }}"
+                                                style="background-color: #0a0a0a; border-bottom: 1px solid #333;">
+                                            <strong>Section {{ section.number }}:</strong> {{ section.title }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ section.id }}" class="accordion-collapse collapse" 
+                                         aria-labelledby="heading{{ section.id }}" data-bs-parent="#ipcAccordion">
+                                        <div class="accordion-body" style="background-color: #0a0a0a; color: #f8f9fa;">
+                                            <p>{{ section.description }}</p>
+                                            <p class="mb-0"><strong>Punishment:</strong> {{ section.punishment }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No relevant IPC sections found for this case.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Legal Precedents -->
+            <div class="card mb-4" id="precedents" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-bank me-2"></i> Relevant Legal Precedents
+                    </h3>
+                    <span class="badge bg-secondary rounded-pill">{{ results.precedents|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if results.precedents %}
+                        <div class="accordion" id="precedentAccordion">
+                            {% for precedent in results.precedents %}
+                                <div class="accordion-item" style="background-color: #0a0a0a; border: 1px solid #333;">
+                                    <h2 class="accordion-header" id="precedentHeading{{ precedent.id }}">
+                                        <button class="accordion-button collapsed text-white" type="button" 
+                                                data-bs-toggle="collapse" data-bs-target="#precedentCollapse{{ precedent.id }}" 
+                                                aria-expanded="false" aria-controls="precedentCollapse{{ precedent.id }}"
+                                                style="background-color: #0a0a0a; border-bottom: 1px solid #333;">
+                                            <strong>{{ precedent.case_name }}</strong> ({{ precedent.year }})
+                                        </button>
+                                    </h2>
+                                    <div id="precedentCollapse{{ precedent.id }}" class="accordion-collapse collapse" 
+                                         aria-labelledby="precedentHeading{{ precedent.id }}" data-bs-parent="#precedentAccordion">
+                                        <div class="accordion-body" style="background-color: #0a0a0a; color: #f8f9fa;">
+                                            <p class="mb-2"><strong>Citation:</strong> {{ precedent.citation }}</p>
+                                            <p class="mb-2"><strong>Court:</strong> {{ precedent.court }}</p>
+                                            <p class="mb-2"><strong>Summary:</strong> {{ precedent.summary }}</p>
+                                            <p class="mb-0"><strong>Relevance to Your Case:</strong> {{ precedent.implications }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No relevant legal precedents found for this case.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Interactive Follow-up Section -->
+            <div class="card mb-4" style="background-color: #0a0a0a; border: 1px solid #333;">
+                <div class="card-header" style="background-color: #000000; border-bottom: 1px solid #333;">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-chat-dots me-2"></i> Ask Follow-up Questions
+                    </h3>
+                </div>
+                <div class="card-body" style="background-color: #0a0a0a;">
+                    <div id="chat-container">
+                        <div id="chat-messages">
+                            <div class="message system-message">
+                                <div class="message-content">
+                                    <p>Feel free to ask any follow-up questions about your case. I'm here to help!</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-0 mt-3">
+                            <input type="text" id="user-input" class="form-control" placeholder="Ask a question about your case..." style="background-color: #111111; border-color: #333; color: #f8f9fa;">
+                            <button class="btn btn-secondary" type="button" id="send-button">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disclaimer -->
+            <div class="alert" role="alert" style="background-color: #0a0a0a; border: 1px solid #333; color: #adb5bd;">
+                <h4 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i> Disclaimer</h4>
+                <p>This analysis is provided for informational purposes only and does not constitute legal advice. The information provided is based on the Indian Penal Code and relevant precedents, but may not capture all legal nuances specific to your case.</p>
+                <hr style="border-top: 1px solid #333;">
+                <p class="mb-0">Please consult with a qualified legal professional before taking any action based on this analysis.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add JavaScript for the chat functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    
+    // Case details from session to provide context for AI responses
+    const caseType = "{{ results.case_details.case_type }}";
+    const caseDescription = "{{ results.case_details.offense_description }}";
+    const caseLocation = "{{ results.case_details.incident_location }}";
+    const caseDate = "{{ results.case_details.incident_date }}";
+    
+    // Get IPC sections applicable to this case
+    const ipcSections = [];
+    {% for section in results.ipc_sections %}
+        ipcSections.push({
+            number: "{{ section.number }}",
+            title: "{{ section.title }}"
+        });
+    {% endfor %}
+    
+    function addMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = isUser ? 'message user-message' : 'message ai-message';
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.innerHTML = `<p>${content}</p>`;
+        
+        messageDiv.appendChild(messageContent);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom of chat
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    async function generateAIResponse(userQuestion) {
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message ai-message';
+        loadingDiv.innerHTML = '<div class="message-content"><p><i class="bi bi-hourglass-split"></i> Thinking...</p></div>';
+        chatMessages.appendChild(loadingDiv);
+        
+        try {
+            // Make API call to our Gemini-powered backend
+            const response = await fetch("{{ url_for('chat_response') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    case_id: {{ results.case_id }},
+                    question: userQuestion
+                })
+            });
+            
+            const data = await response.json();
+            
+            // Remove loading indicator
+            chatMessages.removeChild(loadingDiv);
+            
+            if (data.error) {
+                return "I'm sorry, I encountered an error processing your question. Please try again or rephrase your question.";
+            }
+            
+            return data.response;
+        } catch (error) {
+            console.error('Error:', error);
+            // Remove loading indicator
+            chatMessages.removeChild(loadingDiv);
+            return "I'm sorry, there was a problem connecting to the server. Please try again later.";
+        }
+        if (phoneMatch) {
+            details.deviceType = phoneMatch[0];
+        } else if (descriptions.case.includes("phone") || descriptions.case.includes("mobile")) {
+            details.deviceType = "phone";
+        }
+        
+        // Check for IMEI number mention
+        details.hasIMEI = descriptions.case.includes("imei") || descriptions.evidence.includes("imei");
+        
+        // Check for CCTV footage mention
+        details.hasCCTV = descriptions.case.includes("cctv") || descriptions.evidence.includes("cctv") || 
+                          descriptions.case.includes("camera") || descriptions.evidence.includes("camera") ||
+                          descriptions.case.includes("surveillance") || descriptions.evidence.includes("surveillance") ||
+                          descriptions.case.includes("footage") || descriptions.evidence.includes("footage");
+        
+        // Check for receipt mention
+        details.hasReceipt = descriptions.case.includes("receipt") || descriptions.evidence.includes("receipt") || 
+                             descriptions.case.includes("bill") || descriptions.evidence.includes("bill") ||
+                             descriptions.case.includes("invoice") || descriptions.evidence.includes("invoice");
+        
+        // Check for specific locations
+        const locationMatch = descriptions.case.match(/(mall|shop|store|market|restaurant|hotel|house|apartment|office|building|street|road|park|station|bus|train|metro|theater|cinema|hospital|bank|atm|school|college)/i);
+        if (locationMatch) {
+            details.specificLocation = locationMatch[0];
+        }
+        
+        // Check for timing information
+        const timeMatch = descriptions.case.match(/(\d+)\s*(minutes|minute|min|hour|hours|days)/i);
+        if (timeMatch) {
+            details.timeFrame = timeMatch[0];
+        }
+        
+        // Common responses based on question patterns with personalization
+        if (userQuestion.match(/how (long|much time)/i) || userQuestion.match(/timeline/i)) {
+            const timelineResponses = [
+                `For your ${caseType.toLowerCase()} case involving ${details.deviceType || "property"} at ${caseLocation}, the timeframe can vary. The initial police investigation typically takes 30-60 days. If they identify a suspect, the case may proceed to court, which could take several additional months. In Delhi, theft cases often take 6-12 months for complete resolution, though this varies based on case complexity and court backlog. The recovery rate for stolen phones is approximately 20-25% in urban areas, with most recoveries happening within the first two weeks.`,
+                
+                `The timeline for your ${caseType.toLowerCase()} case will progress through several stages. First, after filing the FIR, the police will assign an investigating officer who should begin work immediately. You can expect initial updates within 7-10 days. If they identify suspects or locate your ${details.deviceType || "property"}, you'll be notified to identify it. The investigation phase typically lasts 30-60 days, after which they'll either file a charge sheet or a closure report. If a charge sheet is filed, court proceedings could extend for several months.`,
+                
+                `In theft cases like yours at ${caseLocation}, timing is highly variable. The police will first investigate for 4-8 weeks, focusing on checking CCTV footage${details.hasCCTV ? " that you mentioned is available" : ""}, tracking the device${details.hasIMEI ? " using the IMEI number you have" : ""}, and checking with local informants. If they make progress, the case could be resolved in 2-3 months. However, if it proceeds to court, expect a longer timeline of 6-12 months or more. I suggest following up with the police weekly for the first month to ensure your case receives proper attention.`
+            ];
+            return timelineResponses[Math.floor(Math.random() * timelineResponses.length)];
+        }
+        
+        if (userQuestion.match(/cost|fee|expensive|afford|payment/i)) {
+            const costResponses = [
+                `For your ${caseType.toLowerCase()} case in Delhi, the costs will vary based on how far you pursue it. Filing an FIR is free, and police investigation has no direct cost to you. If you decide to hire a lawyer for advice or representation, initial consultations typically cost ₹1,000-3,000. If your case proceeds to court, lawyer fees may range from ₹10,000-50,000 depending on their experience and the case complexity. Some lawyers work on contingency for theft cases, taking payment only if your property is recovered. There are also free legal aid services available through the Delhi Legal Services Authority if you qualify.`,
+                
+                `The financial aspects of pursuing your ${caseType.toLowerCase()} case vary at different stages. There's no cost to file an FIR or for the police investigation. If you need legal representation, lawyer consultation fees in Delhi typically range from ₹1,500-5,000, with ongoing representation costing more. Court filing fees are minimal (under ₹500) for theft cases. Many lawyers specializing in theft cases offer free initial consultations, and some may work on delayed payment terms. You might also consider approaching the Legal Services Authority for free legal aid if your annual income is below the threshold requirement.`,
+                
+                `For a ${caseType.toLowerCase()} case involving a ${details.deviceType || "valuable item"} in Delhi, your costs could include: legal consultation (₹1,000-5,000), case filing fees (minimal, usually under ₹500), lawyer representation if needed (₹15,000-40,000 for the complete case), and potentially expert witnesses if the case goes to court. Many theft victims find that the initial police report and investigation are sufficient without additional legal costs. The Delhi Police Cyber Cell also offers free assistance for tracking stolen electronic devices, which is particularly relevant for your situation.`
+            ];
+            return costResponses[Math.floor(Math.random() * costResponses.length)];
+        }
+        
+        if (userQuestion.match(/police|FIR|report|station/i)) {
+            let policeStationInfo = "";
+            if (caseLocation.toLowerCase().includes("delhi")) {
+                if (details.specificLocation && details.specificLocation.toLowerCase() === "mall") {
+                    policeStationInfo = " For a mall in Delhi, you should approach the police station in whose jurisdiction the mall falls. Major malls in Delhi are typically under specific police stations: Select Citywalk (Saket) is under Saket Police Station, Pacific Mall is under Subhash Nagar Police Station, and DLF Promenade/Emporio is under Vasant Kunj (North) Police Station.";
+                } else {
+                    policeStationInfo = " In Delhi, you can locate your nearest police station by calling the Police Control Room at 112 or using the Delhi Police website's 'Police Station Locator' feature.";
+                }
+            }
+            
+            const firResponses = [
+                `For your ${caseType.toLowerCase()} case involving the ${details.deviceType || "item"} taken at ${caseLocation}, you should immediately file an FIR at the police station with jurisdiction over that area${policeStationInfo} When filing, bring your ID proof, a detailed written statement of the incident, and any evidence you have${details.hasIMEI ? " - especially the IMEI number and purchase details of your device" : ""}${details.hasReceipt ? " including the receipt you mentioned" : ""}. Include exact time, location (specifically where in ${details.specificLocation || caseLocation}), and descriptions of potential witnesses or suspects. Request a copy of the FIR after filing, as it's your legal right. If the police hesitate to register your complaint, you can approach the Station House Officer (SHO) or submit a written complaint to the Superintendent of Police.`,
+                
+                `To file an FIR for your ${details.deviceType || "property"} theft at ${caseLocation}, visit the police station with jurisdiction over that area${policeStationInfo} Prepare a written complaint containing: your personal details, exact time and date of the incident (${caseDate}), precise location within ${details.specificLocation || caseLocation}, detailed description of the ${details.deviceType || "stolen item"}${details.hasIMEI ? " including IMEI number" : ""}, and circumstances of the theft. The police are legally obligated to register an FIR for theft cases. If they suggest filing only a complaint (NC) instead of an FIR, politely insist on an FIR as theft is a cognizable offense. Keep a copy of your FIR and the investigating officer's contact information for follow-up.`,
+                
+                `For reporting the theft of your ${details.deviceType || "property"} from ${caseLocation}, here's what to do: First, go to the police station with jurisdiction over ${details.specificLocation || caseLocation}${policeStationInfo} Bring your identification, ${details.hasIMEI ? "the device's IMEI number (crucial for tracking), " : ""}${details.hasReceipt ? "purchase receipt, " : ""}and a written statement describing the incident in detail. For electronic devices, also add your Google/Apple account details as these can help in tracking. Request that an FIR be filed under Section 379 IPC (theft). The police might ask you to return later to collect a copy of the FIR - make sure you do this, as you'll need it for insurance claims or when following up on the investigation. For stolen phones specifically, also report the theft to your service provider to block the SIM.`
+            ];
+            return firResponses[Math.floor(Math.random() * firResponses.length)];
+        }
+        
+        if (userQuestion.match(/evidence|proof|document/i) && caseType.toLowerCase().includes('theft')) {
+            const evidenceResponses = [
+                `For your ${details.deviceType || "property"} theft case at ${caseLocation}, these specific pieces of evidence will be crucial: ${details.hasCCTV ? "1. The CCTV footage from " + (details.specificLocation || caseLocation) + " - request this immediately as footage is often deleted after 7-30 days" : "1. Any surveillance footage from " + (details.specificLocation || caseLocation) + " - request this immediately"}; 2. ${details.hasReceipt ? "The purchase receipt you mentioned showing proof of ownership" : "Any proof of ownership like receipts, warranty cards, or photos of you with the item"}; ${details.hasIMEI ? "3. Documentation of the IMEI number for tracking purposes - also report this to your service provider" : "3. For electronic devices, any serial numbers or unique identifiers"}; 4. Witness statements from anyone who was with you at ${caseLocation}; 5. Any tracking information if your device has location services enabled (check your Google account timeline or Find My Device/iPhone); and 6. Screenshots of any suspicious activity if someone attempts to use your accounts after the theft.`,
+                
+                `For your particular theft case at ${details.specificLocation || caseLocation}, focus on collecting: ${details.hasCCTV ? "The CCTV footage showing the area where your " + (details.deviceType || "item") + " was taken - speak directly with security management at " + (details.specificLocation || caseLocation) + " to preserve this footage" : "Any security camera footage from the area - speak with management at " + (details.specificLocation || caseLocation)}; ${details.hasIMEI ? "Documentation of your device's IMEI number (dial *#06# on most phones to find this if you don't have it recorded)" : "Any unique identifying information about the stolen item"}; ${details.hasReceipt ? "The purchase receipt and warranty information you have" : "Purchase documentation showing you own the item"}; Statements from anyone who was with you at the time or might have witnessed suspicious activity; Photos of the exact location where the theft occurred; and A detailed timeline of events before and after you noticed the ${details.deviceType || "item"} was missing.`,
+                
+                `Based on your specific ${caseType.toLowerCase()} situation at ${details.specificLocation || caseLocation}, prioritize these forms of evidence: ${details.hasIMEI ? "1. Your device's IMEI number (this is absolutely critical for tracking and identification) - report this to both police and your service provider" : "1. Any unique identifying numbers or characteristics of your stolen property"}; ${details.hasCCTV ? "2. The surveillance footage you mentioned - approach " + (details.specificLocation || caseLocation) + " management immediately with your FIR copy to request footage preservation" : "2. Request security camera footage from " + (details.specificLocation || caseLocation) + " immediately with your FIR copy"}; ${details.hasReceipt ? "3. The purchase documentation you have showing proof of ownership" : "3. Anything that can prove ownership such as photos, receipts, or packaging"}; 4. Digital evidence like your Google/Apple account logs showing the device's last known location; 5. Bank statements showing the purchase if you don't have the physical receipt; and 6. Contact information for anyone who was with you at ${caseLocation} who could provide statements.`
+            ];
+            return evidenceResponses[Math.floor(Math.random() * evidenceResponses.length)];
+        }
+        
+        if (userQuestion.match(/track|locate|find|recover/i) && (details.deviceType === "phone" || userQuestion.includes("phone"))) {
+            const trackingResponses = [
+                `To track and potentially recover your stolen ${details.deviceType || "phone"}, take these specific steps immediately: 1. Use Google's Find My Device (Android) or Find My iPhone (iOS) service to locate, lock, or erase your device remotely; 2. Report the IMEI number (${details.hasIMEI ? "which you mentioned you have" : "which you can find on your purchase receipt or box"}) to the police and your service provider to block the device; 3. Change passwords for all accounts accessed from your phone, especially banking and email; 4. Monitor account activities for any unauthorized access; 5. File a request with Delhi Police Cyber Cell specifically for electronic device tracking; and 6. Check online marketplaces like OLX and local markets known for selling second-hand phones (Gaffar Market, Nehru Place in Delhi) in the coming weeks. Recovery rates are higher when action is taken within 48-72 hours.`,
+                
+                `For recovering your stolen ${details.deviceType || "phone"} from ${caseLocation}, here's a comprehensive approach: First, use the device tracking service for your phone type - Google Find My Device, Samsung Find My Mobile, or Apple's Find My iPhone. If the device is still powered on, you may see its location. ${details.hasIMEI ? "With the IMEI number you have, contact your service provider to block the SIM and report to Delhi Police Cyber Cell who can track the IMEI if the phone connects to any network." : "Try to locate your IMEI number from old records and report it to your service provider and the Cyber Cell."} Request that ${details.specificLocation || caseLocation} check all exit points on their ${details.hasCCTV ? "CCTV system" : "security cameras"} from the time of the theft. Also inform friends and family about the theft so they can ignore suspicious messages from your number. Check platforms like Cashify, OLX, and physical markets like Gaffar Market where stolen phones often appear within days of theft.`,
+                
+                `To maximize chances of recovering your ${details.deviceType || "phone"} stolen at ${details.specificLocation || caseLocation}, follow this specific protocol: Immediately access your Google/Apple account from another device to track your phone's last known location and lock it remotely with a message displaying your alternate contact number. ${details.hasIMEI ? "File an online complaint with the National Cyber Crime Reporting Portal (cybercrime.gov.in) specifically mentioning your IMEI number." : "Try to find your IMEI number from your purchase documentation or phone box and include it in a cyber crime report."} Contact your bank to freeze any payment apps on the device. Check with security at ${details.specificLocation || caseLocation} to review ${details.hasCCTV ? "the CCTV footage you mentioned" : "any surveillance footage"}, focusing on the specific area where you last had your phone. In Delhi, visit the District Cyber Cell with your FIR and phone details - they can track phones even after they've been reset if you have the IMEI. Finally, monitor second-hand selling platforms for listings matching your device.`
+            ];
+            return trackingResponses[Math.floor(Math.random() * trackingResponses.length)];
+        }
+        
+        if (userQuestion.match(/rights|protection/i)) {
+            const rightsResponses = [
+                `As the victim in this ${caseType.toLowerCase()} case, you have specific rights under Indian law: 1. The right to have your FIR registered without delay for the theft of your ${details.deviceType || "property"} - this is non-negotiable; 2. The right to receive a free copy of the FIR immediately; 3. The right to know the status of your investigation (Section 173 CrPC); 4. The right to legal representation if needed; 5. The right to claim compensation if the accused is convicted; and 6. The right to appeal if the police file a closure report without your satisfaction. If your rights are violated - for example, if the police refuse to file an FIR for your case at ${caseLocation} - you can approach the Superintendent of Police, file a complaint with the State Police Complaints Authority, or file a petition under Section 156(3) CrPC with the local Magistrate.`,
+                
+                `In your ${caseType.toLowerCase()} case involving ${details.deviceType || "property"} taken at ${caseLocation}, Indian law guarantees you these specific protections: First, you have the absolute right to have an FIR registered - the Supreme Court has ruled that police cannot refuse this for cognizable offenses like theft. You're entitled to regular updates about your case progress - typically every 30 days until the investigation concludes. You have the right to attend proceedings if the case goes to court, and to seek compensation for your loss under Section 357 CrPC. If your stolen ${details.deviceType || "property"} is recovered, you have the right to have it returned after necessary documentation. Furthermore, the Information Technology Act provides additional protections if your personal data was compromised along with the physical device.`,
+                
+                `For your specific situation involving the theft at ${details.specificLocation || caseLocation}, these rights are particularly important: You're entitled to police assistance in obtaining ${details.hasCCTV ? "the CCTV footage you mentioned exists" : "any surveillance footage that may exist"} - they should approach the establishment with an official request. You have the right to file additional complaints if you discover more missing items or information after the initial FIR. If your case involves a ${details.deviceType || "valuable item"}, you can request special attention from senior officers if the investigation seems to stall. In Delhi specifically, you also have the right to approach specialized units like the Cyber Cell or Property Cell that focus on recovery of stolen goods. The Delhi Victim Compensation Scheme also provides for financial assistance in certain theft cases where significant loss is incurred.`
+            ];
+            return rightsResponses[Math.floor(Math.random() * rightsResponses.length)];
+        }
+        
+        // IPC section specific questions with personalization
+        for (const section of ipcSections) {
+            const sectionRegex = new RegExp(`section\\s*(${section.number})|${section.title.replace(/\s+/g, '\\s+')}`, 'i');
+            if (userQuestion.match(sectionRegex)) {
+                if (section.number === "378" || section.number === "379") { // Theft sections
+                    const theftSectionResponses = [
+                        `Section ${section.number} (${section.title}) of the IPC is particularly relevant to your case of ${details.deviceType || "property"} theft at ${caseLocation}. This section defines theft as taking property without consent, with the intention of permanently depriving the owner. For your case, the prosecution would need to establish: 1) that the ${details.deviceType || "item"} was your property; 2) that it was taken without your permission; and 3) that there was intention to take it (not just misplaced). ${details.hasReceipt ? "Your purchase receipt helps establish the first element." : "Any proof of ownership would help establish the first element."} ${details.hasCCTV ? "The CCTV footage you mentioned could be crucial for establishing the second and third elements." : "Eyewitness testimony or circumstantial evidence would be needed for the remaining elements."} Under Section 379, conviction carries imprisonment up to 3 years, a fine, or both.`,
+                        
+                        `Section ${section.number} covers the offense of ${section.title.toLowerCase()} and forms the primary legal basis for your case. In the context of your ${details.deviceType || "property"} being taken at ${details.specificLocation || caseLocation}, here's what makes this section apply: The law requires proving "dishonest intention" - meaning the person who took your ${details.deviceType || "property"} intended to keep it permanently rather than just borrowing it. The fact that you discovered it missing ${details.timeFrame ? "after " + details.timeFrame : "later"} suggests it wasn't just momentarily misplaced. The punishment under this section can include imprisonment up to 3 years and/or a fine, though first-time offenders often receive sentences closer to 6 months to 1 year. Courts typically consider factors like the value of stolen property (${details.deviceType ? "smartphones being considered medium-value items" : "depending on the value of your item"}), whether force was used, and the criminal history of the accused.`,
+                        
+                        `For your specific case of theft at ${details.specificLocation || caseLocation}, Section ${section.number} (${section.title}) is applied because it specifically addresses situations where movable property (like your ${details.deviceType || "item"}) is taken without permission. The section's wording "whoever, intending to take dishonestly any movable property" is key - it requires proving the taking was intentional and dishonest, not accidental. ${details.hasCCTV ? "The CCTV footage you mentioned could be critical in establishing this intent." : "Establishing this intent typically requires circumstantial evidence or witnesses."} If your case involves pickpocketing in a crowded area like ${details.specificLocation || caseLocation}, courts often recognize the methodical nature of such thefts as clear evidence of dishonest intention. For a conviction, the prosecutor would need to demonstrate that someone physically moved your property with the intention of taking it, which is why ${details.hasReceipt ? "the documentation you have proving ownership" : "any proof of ownership"} combined with evidence of the property no longer being in your possession is essential to the case.`
+                    ];
+                    return theftSectionResponses[Math.floor(Math.random() * theftSectionResponses.length)];
+                } else {
+                    // Generic response for other sections
+                    return `Section ${section.number} (${section.title}) of the Indian Penal Code is relevant to your case because it specifically addresses the conduct you've described in your report about the incident at ${caseLocation}. The elements that need to be proven under this section include showing that the accused had the required intent and committed the specific acts outlined in the section. The punishment can vary based on the specifics of your case, including factors like planning, severity, and previous offenses. Your lawyer can help build a case that properly demonstrates all elements required under Section ${section.number}.`;
+                }
+            }
+        }
+        
+        // Check for recovery chances questions
+        if (userQuestion.match(/chance|likelihood|probability|possible|recover|get.*back/i)) {
+            const recoveryResponses = [
+                `Based on Delhi Police statistics for similar ${caseType.toLowerCase()} cases involving ${details.deviceType || "items"} taken from ${details.specificLocation || "public places"}, the recovery rate is approximately 20-25%. Your chances are improved by several factors in your specific case: ${details.hasIMEI ? "1. You have the IMEI number which significantly increases tracking potential;" : ""}${details.hasCCTV ? "2. The availability of CCTV footage at the location;" : ""}${details.hasReceipt ? "3. Your proof of ownership through documentation;" : ""} 4. The fact that you're reporting this promptly. For electronic devices stolen in Delhi, most recoveries happen within the first 2-3 weeks, particularly when devices appear in resale markets. While I can't guarantee recovery, taking prompt action with all the specific evidence you have gives you a better than average chance compared to similar cases.`,
+                
+                `Recovery chances for your ${details.deviceType || "property"} depend on several case-specific factors. For theft at ${details.specificLocation || caseLocation} in Delhi, recovery rates vary by item type. For smartphones, the recovery rate is around 25-30% when reported within 24 hours with IMEI information${details.hasIMEI ? " (which you have)" : ""}. ${details.hasCCTV ? "Having CCTV footage significantly improves these odds, potentially up to 40-45% if the footage clearly shows the perpetrator." : "Without clear video evidence, the odds decrease somewhat."} The Delhi Police Property Cell has specialized teams for recovery of stolen valuables, and they often conduct raids at known resale locations. Your specific case has ${details.hasIMEI || details.hasCCTV || details.hasReceipt ? "better than average chances due to the evidence you've mentioned" : "standard chances of recovery"}, particularly if you follow up regularly with the investigating officer.`,
+                
+                `For a realistic assessment of recovering your stolen ${details.deviceType || "property"} from ${caseLocation}: In Delhi, approximately 22-28% of reported stolen electronic devices are eventually recovered, with chances decreasing significantly after the first 3-4 weeks. Your specific situation has these favorable factors: ${details.hasIMEI ? "The IMEI information you have allows for technical tracking;" : ""}${details.hasCCTV ? "Potential visual identification through security footage;" : ""}${details.timeFrame ? "Your relatively quick discovery of the theft within " + details.timeFrame + ";" : ""} and The fact that mall thefts often involve opportunistic rather than professional thieves. Recovery typically happens through one of three channels: technical tracking of the device, identification through CCTV leading to apprehension, or recovery during police raids on illegal resale markets. I recommend maintaining weekly contact with your investigating officer for the first month to keep your case active.`
+            ];
+            return recoveryResponses[Math.floor(Math.random() * recoveryResponses.length)];
+        }
+        
+        // Default responses when no specific pattern is matched - more personalized
+        const defaultResponses = [
+            `Regarding your ${details.deviceType || "property"} theft at ${details.specificLocation || caseLocation}, I recommend these immediate next steps: First, file an FIR at the police station with jurisdiction over ${caseLocation}${details.hasIMEI ? ", making sure to include the IMEI number in your report" : ""}. Second, ${details.hasCCTV ? "request that the mall security preserve the CCTV footage you mentioned" : "check if there's any surveillance footage available"}. Third, gather all documentation proving ownership${details.hasReceipt ? " including the receipt you have" : ""}. The IPC sections relevant to your case (particularly Section 379) establish that this is a cognizable offense, meaning police must investigate. Once you've filed the report, request the investigating officer's contact information for follow-up, and check in weekly on progress.`,
+            
+            `For your situation involving the ${details.deviceType || "item"} stolen at ${details.specificLocation || caseLocation}, these practical steps will strengthen your case: 1. Document everything about the incident in writing, including exactly where in ${details.specificLocation || caseLocation} you were, who was around you, and when you first noticed the item missing; 2. ${details.hasIMEI ? "Make multiple copies of your IMEI documentation" : "Try to locate any identifying numbers for your property"}${details.hasReceipt ? " and purchase receipt" : ""}; 3. File both an online complaint on the Cyber Crime Portal (especially for electronic devices) AND a physical FIR; 4. If your phone was stolen, immediately contact your service provider to block the SIM and notify your bank to secure any payment apps; 5. ${details.hasCCTV ? "Follow up specifically about the security footage within 48 hours as it may be overwritten" : "Ask the establishment if they have any security footage that might help"}. Taking these specific actions will substantially improve both investigation quality and recovery chances.`,
+            
+            `Based on my analysis of your ${caseType.toLowerCase()} case at ${caseLocation}, and particularly considering it involved a ${details.deviceType || "valuable item"}, your next steps should be carefully sequenced: Start by filing an FIR today if possible, as time is critical in theft cases${details.timeFrame ? ", especially since you noticed it missing after " + details.timeFrame : ""}. Simultaneously, ${details.hasCCTV ? "approach the security department at " + (details.specificLocation || caseLocation) + " with a copy of your FIR to request footage preservation" : "check with " + (details.specificLocation || caseLocation) + " about any security cameras that might have captured the incident"}. For the specific type of theft you experienced (likely pickpocketing in a crowded area), Section 379 IPC provides the legal framework, with additional provisions if the thief used any specialized techniques. Delhi Police has recently established specialized anti-theft units for commercial areas, so specifically request that your case be referred to them for better results.`,
+            
+            `Your ${caseType.toLowerCase()} case involving the ${details.deviceType || "item"} taken at ${details.specificLocation || caseLocation} has several specific legal dimensions to consider. The applicable IPC sections establish that this is theft (taking property without consent), and the fact that it occurred in a public place like ${details.specificLocation || caseLocation} may make it easier to investigate if ${details.hasCCTV ? "the security footage you mentioned can be obtained" : "security footage exists"}. Delhi Police statistics show that ${details.deviceType ? details.deviceType + " thefts" : "thefts"} in public places often follow patterns, so your case may be connected to others. When you speak with the investigating officer, ask specifically if similar incidents have been reported recently at ${details.specificLocation || caseLocation}, as this could lead to faster resolution if they're tracking a pattern. ${details.hasIMEI ? "The IMEI information you have provides a significant advantage that many theft victims don't have." : "Try to provide any unique identifying information about the item that might help in recovery."}`
+        ];
+        
+        return "I'm sorry, I couldn't understand your question. Please try asking in a different way or provide more details about what you'd like to know about your case.";
+    }
+    
+    async function handleUserInput() {
+        const userQuestion = userInput.value.trim();
+        if (userQuestion === '') return;
+        
+        // Add user message to chat
+        addMessage(userQuestion, true);
+        userInput.value = '';
+        
+        // Generate AI response (loading indicator is handled in the generateAIResponse function)
+        const aiResponse = await generateAIResponse(userQuestion);
+        
+        // Add AI response to chat
+        addMessage(aiResponse, false);
+    }
+    
+    // Event listeners
+    sendButton.addEventListener('click', handleUserInput);
+    
+    userInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            handleUserInput();
+        }
+    });
+    
+    // Focus input field when chat container is clicked
+    document.getElementById('chat-container').addEventListener('click', function() {
+        userInput.focus();
+    });
+    
+    // Automatically focus input field on page load
+    setTimeout(() => {
+        userInput.focus();
+    }, 1000);
+    
+    // Add some example questions that user can click on
+    const exampleQuestions = [
+        "What are my legal rights in this case?",
+        "How long will this process take?",
+        "What evidence do I need to strengthen my case?",
+        "What's the punishment for this offense?",
+        "How can I track my stolen device?"
+    ];
+    
+    // Randomly select 3 example questions
+    const selectedQuestions = exampleQuestions
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+    
+    // Add example questions before the system message
+    const examplesDiv = document.createElement('div');
+    examplesDiv.className = 'example-questions';
+    examplesDiv.innerHTML = `
+        <p class="text-muted small mb-2">Try asking:</p>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            ${selectedQuestions.map(q => 
+                `<button class="btn btn-sm btn-outline-secondary example-question">${q}</button>`
+            ).join('')}
+        </div>
+    `;
+    
+    // Insert example questions before the first message
+    chatMessages.insertBefore(examplesDiv, chatMessages.firstChild);
+    
+    // Add event listeners to example question buttons
+    document.querySelectorAll('.example-question').forEach(button => {
+        button.addEventListener('click', function() {
+            userInput.value = this.textContent;
+            handleUserInput();
+        });
+    });
+});
+</script>
+
+<!-- Add CSS for the chat interface -->
+<style>
+#chat-container {
+    max-height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-messages {
+    max-height: 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #333 #0a0a0a;
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 6px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 10px;
+    font-family: 'Georgia', serif;
+}
+
+.message-content {
+    padding: 12px 16px;
+    border-radius: 16px;
+    max-width: 85%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    line-height: 1.5;
+}
+
+.message-content p {
+    margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.system-message .message-content {
+    background-color: #0a0a0a;
+    color: #adb5bd;
+    align-self: center;
+    margin: 0 auto;
+    text-align: center;
+    font-style: italic;
+    max-width: 90%;
+    border: 1px solid #333;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.user-message .message-content {
+    background-color: #1a4d8f;
+    color: white;
+    border-radius: 16px 16px 0 16px;
+}
+
+.ai-message {
+    justify-content: flex-start;
+}
+
+.ai-message .message-content {
+    background-color: #0a0a0a;
+    color: #e7e7e7;
+    border-radius: 16px 16px 16px 0;
+    border: 1px solid #333;
+}
+
+.example-questions {
+    margin: 0 auto 15px;
+    width: 100%;
+    text-align: center;
+}
+
+.example-question {
+    background-color: #0a0a0a;
+    color: #adb5bd;
+    border: 1px solid #333;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.example-question:hover {
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+    border-color: #444;
+}
+
+.typing .dot-one, .typing .dot-two, .typing .dot-three {
+    animation: dot-typing 1.5s infinite;
+    display: inline-block;
+}
+
+.typing .dot-two {
+    animation-delay: 0.5s;
+}
+
+.typing .dot-three {
+    animation-delay: 1s;
+}
+
+@keyframes dot-typing {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

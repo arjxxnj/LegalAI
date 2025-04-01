@@ -1,0 +1,417 @@
+/* Custom styles for Indian Legal Assistant - More "human-designed" look */
+
+/* Apply custom fonts and sizes with slight variations */
+body {
+    padding-top: 1.8rem;
+    padding-bottom: 2.2rem;
+    background-color: #000000 !important;
+    /* Slightly irregular padding for more human feel */
+}
+
+/* Professional fonts for the site */
+.navbar-brand span {
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    color: #f8f9fa;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Card title styling */
+.card-title {
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.5px;
+    color: #f8f9fa;
+}
+
+/* Footer styling */
+.footer {
+    background-color: #000000;
+    border-top: 1px solid #333;
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+}
+
+/* Custom form control styling */
+.form-control, .form-select {
+    background-color: #111111;
+    border-color: #333;
+    color: #f8f9fa;
+}
+
+.subtitle {
+    opacity: 0.84;
+    margin-bottom: 1.6rem;
+    letter-spacing: 0.2px;
+}
+
+/* Hero section - less perfect gradient, more "designed" */
+.hero-section {
+    padding: 3.2rem 0 2.8rem;
+    background: linear-gradient(132deg, #0a0a0a 0%, #1a1a1a 85%, #111111 100%);
+    border-radius: 0.4rem;
+    margin-bottom: 2.3rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid #333;
+}
+
+/* Case form - slight asymmetry */
+.case-form {
+    padding: 2.1rem 1.9rem 2.2rem 2.3rem;
+    border-radius: 0.45rem;
+    margin-bottom: 2.2rem;
+    border-left: 3px solid #3e4a5a;
+    background-color: #0a0a0a;
+    border: 1px solid #333;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: #d8d9da;
+}
+
+/* Analysis page - less perfect styling */
+.analysis-container {
+    padding: 2.4rem 2.1rem 2.2rem;
+    border-radius: 0.4rem 0.5rem 0.45rem 0.5rem;
+    margin-bottom: 2.1rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.analysis-section {
+    margin-bottom: 2.1rem;
+    padding-bottom: 1.3rem;
+    border-bottom: 1px solid #353a47;
+}
+
+.analysis-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0.8rem;
+}
+
+.case-details-card {
+    margin-bottom: 1.7rem;
+    border-radius: 0.35rem;
+}
+
+/* Less perfect spacing and border variations */
+.ipc-section-card {
+    margin-bottom: 1.2rem;
+    border-left: 4px solid #555555;
+    padding: 1.3rem 1.1rem 1.25rem 1.4rem;
+    background-color: #0a0a0a;
+    border: 1px solid #333;
+}
+
+.precedent-card {
+    margin-bottom: 1.3rem;
+    border-left: 3px solid #444444;
+    padding: 1.2rem 1.3rem;
+    background-color: #0a0a0a;
+    border: 1px solid #333;
+}
+
+/* IPC Sections page - varied transitions */
+.section-card {
+    margin-bottom: 1.1rem;
+    transition: all 0.28s ease-out;
+    border-radius: 0.35rem;
+    border: 1px solid #333;
+    background-color: #0a0a0a;
+}
+
+.section-card:hover {
+    transform: translateY(-3px) translateX(1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-color: #444;
+}
+
+/* Util classes - more human variations */
+.text-smaller {
+    font-size: 0.87rem;
+    letter-spacing: 0.1px;
+}
+
+.bg-legal-dark {
+    background-color: #242830;
+}
+
+.bg-legal-accent {
+    background-color: #505050;
+}
+
+/* Loading spinner with delay */
+.spinner-container {
+    display: none;
+    margin: 2.2rem auto 1.8rem;
+    text-align: center;
+}
+
+/* Case type badges - less uniform styling */
+.badge-case-type {
+    font-size: 0.84rem;
+    padding: 0.45rem 0.8rem 0.5rem 0.7rem;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+}
+
+.badge-theft {
+    background-color: #922b3e;
+}
+
+.badge-assault {
+    background-color: #955d20;
+}
+
+.badge-fraud {
+    background-color: #286a8d;
+}
+
+.badge-other {
+    background-color: #4b5468;
+}
+
+/* Analysis content - more accessible formatting */
+.analysis-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e8e9ec;
+}
+
+.analysis-content h2 {
+    font-size: 1.7rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #d9dce3;
+    border-bottom: 1px solid #3d4454;
+    padding-bottom: 0.5rem;
+}
+
+.analysis-content h3 {
+    font-size: 1.4rem;
+    margin-top: 1.3rem;
+    margin-bottom: 0.8rem;
+    color: #c4d2e8;
+}
+
+.analysis-content h4 {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.6rem;
+    color: #b3bac7;
+    font-weight: 600;
+}
+
+.analysis-content p {
+    margin-bottom: 1rem;
+}
+
+.analysis-content strong {
+    color: #ffffff;
+}
+
+.analysis-content ul, .analysis-content ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.4rem;
+    color: #eaecf0;
+}
+
+/* Citations and references styling - more readable */
+.legal-citation {
+    font-style: italic;
+    color: #c8c8c8;
+    font-size: 0.9rem;
+    padding: 0.6rem;
+    background-color: #1a1a1a;
+    border-left: 3px solid #444444;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.text-smaller {
+    font-size: 0.9rem;
+    color: #a8aebf;
+}
+
+/* Interactive elements */
+.analysis-section {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.analysis-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.highlight-text {
+    background-color: #333333;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.highlight-text:hover {
+    background-color: #444444;
+}
+
+.action-btn {
+    transition: transform 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+.floating-action {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.tooltip-custom {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dashed #4a5568;
+}
+
+.section-badge {
+    transition: all 0.3s ease;
+}
+
+.section-badge:hover {
+    transform: scale(1.1);
+}
+
+.evidence-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 2px;
+    background-color: #3a3a3a;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.evidence-tag:hover {
+    background-color: #4a4a4a;
+}
+
+/* Chat Interface Styling - Enhanced Professional Look */
+#chat-container {
+    max-height: 450px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+}
+
+#chat-messages {
+    max-height: 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px 0;
+    margin-bottom: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: #333 #0a0a0a;
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 6px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 14px;
+    animation: fadeIn 0.35s ease-in;
+    font-family: 'Georgia', serif;
+}
+
+.message-content {
+    padding: 14px 18px;
+    border-radius: 16px;
+    max-width: 85%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+}
+
+.message-content p {
+    margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.system-message .message-content {
+    background-color: #0a0a0a;
+    color: #adb5bd;
+    align-self: center;
+    margin: 0 auto 20px;
+    text-align: center;
+    font-style: italic;
+    max-width: 92%;
+    border: 1px solid #333;
+    font-size: 0.95rem;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.user-message .message-content {
+    background-color: #4a4a4a;
+    color: white;
+    border-radius: 16px 16px 0 16px;
+    font-size: 0.95rem;
+}
+
+.ai-message {
+    justify-content: flex-start;
+}
+
+.ai-message .message-content {
+    background-color: #0a0a0a;
+    color: #e7e7e7;
+    border-radius: 16px 16px 16px 0;
+    border: 1px solid #333;
+    font-size: 0.97rem;
+}
+
+.typing .dot-one, .typing .dot-two, .typing .dot-three {
+    animation: dot-typing 1.5s infinite;
+    display: inline-block;
+}
+
+.typing .dot-two {
+    animation-delay: 0.5s;
+}
+
+.typing .dot-three {
+    animation-delay: 1s;
+}
+
+@keyframes dot-typing {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,239 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center text-white">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="bi bi-scale me-2"></i> Indian Legal Assistant
+        </h1>
+        <p class="lead subtitle">
+            Personalized criminal law guidance based on the Indian Penal Code and relevant precedents
+        </p>
+        <a href="#case-form" class="btn btn-light btn-lg px-4 mt-3">
+            <i class="bi bi-arrow-down-circle me-2"></i> Get Legal Guidance
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="mb-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-book fs-1 text-info mb-3"></i>
+                        <h3 class="card-title h5">IPC Knowledge</h3>
+                        <p class="card-text text-muted">
+                            Access comprehensive information on relevant Indian Penal Code sections for your specific case.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-file-earmark-text fs-1 text-primary mb-3"></i>
+                        <h3 class="card-title h5">Case Analysis</h3>
+                        <p class="card-text text-muted">
+                            Receive detailed analysis of your legal situation with procedural insights and strategic guidance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bank2 fs-1 text-success mb-3"></i>
+                        <h3 class="card-title h5">Legal Precedents</h3>
+                        <p class="card-text text-muted">
+                            Learn from relevant judicial precedents that can influence the interpretation of your case.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Case Submission Form -->
+<section id="case-form" class="case-form bg-dark">
+    <div class="container">
+        <h2 class="mb-4 text-center">Submit Your Case for Analysis</h2>
+        <p class="text-muted text-center mb-4">
+            Fill out the form below with your case details to receive personalized legal guidance.
+        </p>
+        
+        <form id="caseForm" action="{{ url_for('submit_case') }}" method="post">
+            <!-- User Information -->
+            <div class="card mb-4 bg-dark border-secondary">
+                <div class="card-header bg-dark border-secondary">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-person-circle me-2"></i> Your Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Case Details -->
+            <div class="card mb-4 bg-dark border-secondary">
+                <div class="card-header bg-dark border-secondary">
+                    <h3 class="h5 mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i> Case Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="case_type" class="form-label">Case Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="case_type" name="case_type" required>
+                                <option value="" selected disabled>Select case type...</option>
+                                <option value="Theft">Theft</option>
+                                <option value="Assault">Assault</option>
+                                <option value="Fraud">Fraud</option>
+                                <option value="Murder">Murder</option>
+                                <option value="Rape">Rape</option>
+                                <option value="Domestic Violence">Domestic Violence</option>
+                                <option value="Cybercrime">Cybercrime</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="incident_date" class="form-label">Incident Date</label>
+                            <input type="date" class="form-control" id="incident_date" name="incident_date">
+                        </div>
+                        <div class="col-12">
+                            <label for="incident_location" class="form-label">Incident Location</label>
+                            <input type="text" class="form-control" id="incident_location" name="incident_location" placeholder="City, State">
+                        </div>
+                        <div class="col-12">
+                            <label for="offense_description" class="form-label">Offense Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="offense_description" name="offense_description" rows="3" required
+                                      placeholder="Provide a detailed description of the offense..."></textarea>
+                        </div>
+                        <div class="col-md-6" id="victim_details_group">
+                            <label for="victim_details" class="form-label">Victim Details</label>
+                            <textarea class="form-control" id="victim_details" name="victim_details" rows="3"
+                                      placeholder="Provide details about the victim (if applicable)..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="accused_details" class="form-label">Accused Details</label>
+                            <textarea class="form-control" id="accused_details" name="accused_details" rows="3"
+                                      placeholder="Provide details about the accused (if applicable)..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="evidence_summary" class="form-label">Evidence Summary</label>
+                            <textarea class="form-control" id="evidence_summary" name="evidence_summary" rows="3"
+                                      placeholder="Summarize any evidence related to the case..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="query" class="form-label">Your Legal Query <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="query" name="query" rows="4" required
+                                      placeholder="Describe what specific legal guidance you're seeking..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="text-center mb-3">
+                <p class="text-muted small mb-3">
+                    By submitting this form, you acknowledge that the analysis provided is for informational purposes only
+                    and does not constitute legal advice.
+                </p>
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-send me-2"></i> Submit for Analysis
+                </button>
+            </div>
+        </form>
+        
+        <!-- Loading Spinner -->
+        <div class="spinner-container text-center">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Processing your case... This may take a few moments.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="mb-5 mt-5">
+    <div class="container">
+        <h2 class="text-center mb-4">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <div class="display-4 mb-3 text-primary">1</div>
+                        <h3 class="card-title h5">Submit Case Details</h3>
+                        <p class="card-text text-muted">
+                            Fill out the form with information about your legal situation
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <div class="display-4 mb-3 text-primary">2</div>
+                        <h3 class="card-title h5">Analysis Processing</h3>
+                        <p class="card-text text-muted">
+                            Our system analyzes your case based on the Indian Penal Code
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <div class="display-4 mb-3 text-primary">3</div>
+                        <h3 class="card-title h5">Receive Guidance</h3>
+                        <p class="card-text text-muted">
+                            Get personalized legal guidance and relevant IPC sections
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 bg-dark">
+                    <div class="card-body text-center">
+                        <div class="display-4 mb-3 text-primary">4</div>
+                        <h3 class="card-title h5">Take Action</h3>
+                        <p class="card-text text-muted">
+                            Use the insights to make informed decisions about your case
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Disclaimer -->
+<section class="bg-dark rounded p-4 text-center mb-5">
+    <div class="container">
+        <h3 class="h5 mb-3">Important Disclaimer</h3>
+        <p class="text-muted mb-0">
+            The Indian Legal Assistant provides information for educational purposes only and is not a substitute for
+            professional legal advice. Always consult with a qualified legal professional for advice specific to your situation.
+        </p>
+    </div>
+</section>
+{% endblock %}

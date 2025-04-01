@@ -1,0 +1,166 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- IPC Sections Header -->
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold mb-3">
+            <i class="bi bi-journal-text me-2"></i> Indian Penal Code Sections
+        </h1>
+        <p class="lead text-muted">
+            Reference guide to key sections of the Indian Penal Code relevant to criminal law
+        </p>
+    </div>
+    
+    <!-- Search and Filter -->
+    <div class="card bg-dark mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="ipcSearch" class="form-label">Search IPC Sections</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="ipcSearch" placeholder="Search by section number, title, or keywords...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="ipcCategory" class="form-label">Filter by Category</label>
+                    <select class="form-select" id="ipcCategory">
+                        <option value="all" selected>All Categories</option>
+                        <option value="murder">Homicide & Murder</option>
+                        <option value="hurt">Hurt & Injury</option>
+                        <option value="theft">Theft & Property</option>
+                        <option value="assault">Assault & Force</option>
+                        <option value="sexual">Sexual Offenses</option>
+                        <option value="fraud">Fraud & Cheating</option>
+                        <option value="defamation">Defamation & Intimidation</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- IPC Sections Listing -->
+    <div class="row g-4 mb-5" id="ipcSectionsList">
+        {% for section_id, section in ipc_sections.items() %}
+            <div class="col-md-6 section-card"
+                 data-number="{{ section.number }}"
+                 data-title="{{ section.title.lower() }}"
+                 data-keywords="{{ section.keywords|join(' ')|lower }}"
+                 data-category="{% if section.title in ['Murder', 'Culpable Homicide', 'Attempt to Murder'] %}murder
+                              {% elif 'Hurt' in section.title %}hurt
+                              {% elif section.title in ['Theft', 'Robbery', 'Extortion'] %}theft
+                              {% elif 'Assault' in section.title %}assault
+                              {% elif section.title in ['Rape', 'Modesty'] %}sexual
+                              {% elif section.title in ['Cheating', 'Breach of Trust'] %}fraud
+                              {% elif section.title in ['Defamation', 'Criminal Intimidation'] %}defamation
+                              {% else %}other{% endif %}">
+                <div class="card h-100 bg-dark">
+                    <div class="card-header bg-dark">
+                        <h3 class="h5 mb-0">
+                            <span class="badge bg-secondary me-2">{{ section.number }}</span>
+                            {{ section.title }}
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ section.description|truncate(150) }}</p>
+                        <button class="btn btn-sm btn-outline-info" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#section{{ section.number }}" 
+                                aria-expanded="false" aria-controls="section{{ section.number }}">
+                            Show more details
+                        </button>
+                        <div class="collapse mt-3" id="section{{ section.number }}">
+                            <div class="card card-body bg-dark">
+                                <p>{{ section.description }}</p>
+                                <p class="mb-0"><strong>Punishment:</strong> {{ section.punishment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-dark">
+                        <small class="text-muted">Keywords: {{ section.keywords|join(', ') }}</small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- No Results Message -->
+    <div class="alert alert-info text-center d-none" id="noResultsMessage">
+        <i class="bi bi-exclamation-circle me-2"></i> No IPC sections found matching your search criteria.
+    </div>
+    
+    <!-- Understanding IPC Section -->
+    <div class="card bg-dark mb-5">
+        <div class="card-header bg-dark">
+            <h3 class="h5 mb-0">
+                <i class="bi bi-info-circle me-2"></i> Understanding the Indian Penal Code
+            </h3>
+        </div>
+        <div class="card-body">
+            <p>The Indian Penal Code (IPC) is the official criminal code of India. It is a comprehensive code intended to cover all substantive aspects of criminal law. The code was drafted in 1860 on the recommendations of the first law commission of India established in 1834 under the Charter Act of 1833 under the chairmanship of Thomas Babington Macaulay.</p>
+            
+            <p>The IPC is divided into twenty-three chapters and contains 511 sections. The Code starts with an introduction, provides explanations and exceptions used in it, and covers a wide range of offenses. Each section in the IPC defines a specific crime and prescribes its punishment.</p>
+            
+            <h5 class="mt-4">Key Components of an IPC Section:</h5>
+            <ul>
+                <li><strong>Section Number:</strong> The unique identifier of the section</li>
+                <li><strong>Title:</strong> Brief description of the offense</li>
+                <li><strong>Description:</strong> Detailed explanation of what constitutes the offense</li>
+                <li><strong>Punishment:</strong> The penalties prescribed for committing the offense</li>
+            </ul>
+            
+            <p>Understanding the IPC is crucial for navigating the Indian criminal justice system. This reference guide provides key sections relevant to common criminal cases but is not exhaustive. Always consult with a legal professional for comprehensive legal advice.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('ipcSearch');
+        const categorySelect = document.getElementById('ipcCategory');
+        const sectionCards = document.querySelectorAll('.section-card');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        
+        // Search and filter function
+        function filterSections() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categorySelect.value;
+            
+            let visibleCount = 0;
+            
+            sectionCards.forEach(card => {
+                const number = card.dataset.number;
+                const title = card.dataset.title;
+                const keywords = card.dataset.keywords;
+                const cardCategory = card.dataset.category;
+                
+                // Check if card matches search and category filters
+                const matchesSearch = number.includes(searchTerm) || 
+                                    title.includes(searchTerm) || 
+                                    keywords.includes(searchTerm);
+                                    
+                const matchesCategory = category === 'all' || cardCategory === category;
+                
+                // Show or hide card based on filters
+                if (matchesSearch && matchesCategory) {
+                    card.classList.remove('d-none');
+                    visibleCount++;
+                } else {
+                    card.classList.add('d-none');
+                }
+            });
+            
+            // Show "no results" message if no matches
+            if (visibleCount === 0) {
+                noResultsMessage.classList.remove('d-none');
+            } else {
+                noResultsMessage.classList.add('d-none');
+            }
+        }
+        
+        // Add event listeners
+        searchInput.addEventListener('input', filterSections);
+        categorySelect.addEventListener('change', filterSections);
+    });
+</script>
+{% endblock %}
